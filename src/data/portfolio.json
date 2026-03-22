@@ -1,0 +1,273 @@
+{
+  "profile": {
+    "name": "Wilfried Conrad WAFFEU MBE",
+    "title": "Développeur Fullstack & IA",
+    "bio": "Rigoureux, autonome et doté d'un esprit d'analyse aiguisé, je conçois des architectures logicielles performantes avec passion. Élève ingénieur maîtrisant le développement Full Stack sous Spring Boot, React JS et Angular, j'apporte une forte expertise en intelligence artificielle, intégration de modèles LLM et Big Data.",
+    "email": "waffeuw@3il.fr",
+    "phone": "07 46 51 15 66",
+    "location": "Limoges, France",
+    "mobility": "Mobilité partout en France",
+    "available": true,
+    "seekingRole": "Stage dès Avril ou Alternance pour Septembre 2026",
+    "avatar": "",
+    "photo": "../../assets/profile.png",
+    "cvLink": "#",
+    "social": {
+      "github":   "https://github.com/wackfy4x",
+      "linkedin": "https://linkedin.com/in/wilfried-conrad"
+    }
+  },
+
+  "hero": {
+    "greeting": "Bonjour, je suis",
+    "stats": [
+      { "id": 1, "value": "3",  "label": "Expériences professionnelles" },
+      { "id": 2, "value": "5+", "label": "Projets réalisés" },
+      { "id": 3, "value": "2",  "label": "Hackathons lauréat" }
+    ]
+  },
+
+  "about": {
+    "paragraphs": [
+      "Élève ingénieur passionné par la conception d'architectures logicielles performantes, je maîtrise le développement Full Stack avec Spring Boot, React JS et Angular. J'ai une forte expertise en intelligence artificielle, intégration de modèles LLM et traitement Big Data.",
+      "Mon parcours m'a conduit à travailler sur des projets variés, de la détection d'embouteillages par IA (YOLOv9) à des plateformes e-commerce avec agents conversationnels NLP, en passant par des applications de gestion critiques déployées en production.",
+      "Habitué au travail en équipe et aux méthodes agiles, à l'aise avec Docker et les environnements cloud (Azure, GCP), je recherche un stage dès Avril 2026 pour mettre ma double compétence Fullstack & IA au service de vos projets stratégiques."
+    ],
+    "details": [
+      { "label": "Localisation",  "value": "Limoges, France" },
+      { "label": "Mobilité",      "value": "Partout en France" },
+      { "label": "Disponibilité", "value": "Stage dès Avril 2026" },
+      { "label": "Disponibilité", "value": "Alternance pour Septembre 2026" },
+      { "label": "Langues",       "value": "Français, Anglais" }
+    ]
+  },
+
+  "skills": [
+    { "id": 1,  "name": "Java / Spring Boot",        "icon": "☕", "category": "Backend"   },
+    { "id": 2,  "name": "Python",                    "icon": "🐍", "category": "Backend"   },
+    { "id": 3,  "name": "Node.js / Express JS",      "icon": "🟢", "category": "Backend"   },
+    { "id": 4,  "name": "Django / Flask",            "icon": "🎯", "category": "Backend"   },
+    { "id": 7,  "name": "React JS",                  "icon": "⚛️", "category": "Frontend"  },
+    { "id": 8,  "name": "Angular",                   "icon": "🔺", "category": "Frontend"  },
+    { "id": 9,  "name": "React Native",              "icon": "📱", "category": "Frontend"  },
+    { "id": 10, "name": "TypeScript",                "icon": "🔷", "category": "Frontend"  },
+    { "id": 11, "name": "Figma",                     "icon": "🎨", "category": "Frontend"  },
+    { "id": 12, "name": "Docker",                    "icon": "🐳", "category": "DevOps"    },
+    { "id": 13, "name": "Git",                       "icon": "🌿", "category": "DevOps"    },
+    { "id": 14, "name": "Gitlab CI",                 "icon": "🌿", "category": "DevOps"    },
+    { "id": 15, "name": "Github action",             "icon": "🌿", "category": "DevOps"    },
+    { "id": 16, "name": "Azure / GCP",               "icon": "☁️", "category": "DevOps"    },
+    { "id": 17, "name": "Kubernetes",                "icon": "⚙️", "category": "DevOps"    },
+    { "id": 18, "name": "Jenkins",                   "icon": "🐧", "category": "DevOps"    },
+    { "id": 19, "name": "linux",                     "icon": "🐧", "category": "DevOps"    },
+    { "id": 20,  "name": "PostgreSQL",                "icon": "🐘", "category": "Databases" },
+    { "id": 21,  "name": "MongoDB",                   "icon": "🍃", "category": "Databases" },
+    { "id": 22,  "name": "Firebase",                  "icon": "🐘", "category": "Databases" },
+    { "id": 23,  "name": "Neo4J",                     "icon": "🍃", "category": "Databases" },
+    { "id": 24,  "name": "Cassandra DB",              "icon": "🍃", "category": "Databases" },
+    { "id": 25,  "name": "MinIO",                     "icon": "🍃", "category": "Databases" },
+    { "id": 26, "name": "IA / LLM / Ollama",         "icon": "🤖", "category": "IA & Data" },
+    { "id": 27, "name": "YOLOv9",                    "icon": "👁️", "category": "IA & Data" },
+    { "id": 28, "name": "Tensorflow",                "icon": "🧠", "category": "IA & Data" },
+    { "id": 29, "name": "Power BI",                  "icon": "📊", "category": "IA & Data" }
+  ],
+
+  "projects": [
+    {
+      "id": 1,
+      "title": "Plateforme E-commerce + Agent IA",
+      "description": "Plateforme e-commerce intégrant un agent conversationnel basé sur des algorithmes NLP et des réseaux de neurones. Interfaces responsives, logique métier e-commerce, flux de paiement sécurisés.",
+      "emoji": "🛒",
+      "image": "",
+      "tags": ["React Native", "React JS", "NLP", "Réseaux de neurones"],
+      "links": { "demo": "", "github": "https://gitlab.com/conradwaffeu/backend_neoshop.git" },
+      "featured": true
+    },
+    {
+      "id": 2,
+      "title": "Application de location de logement",
+      "description": "Application web full-stack de location de logement développée en équipe. Déployée en production avec gestion des retours utilisateurs réels.",
+      "emoji": "🏠",
+      "image": "",
+      "tags": ["Angular", "Spring Boot", "Git"],
+      "links": { "demo": "https://eyangless.com", "github": "" },
+      "featured": true
+    },
+    {
+      "id": 3,
+      "title": "Serious Game — Résilience Numérique",
+      "description": "Serious game sur la résilience numérique développé lors de la Nuit de l'Info 2025, sous contrainte de temps en réponse aux pannes mondiales des GAFAM.",
+      "emoji": "🎮",
+      "image": "",
+      "tags": ["React JS", "Django", "Hackathon"],
+      "links": { "demo": "", "github": "https://github.com/MRGUY10/NIRD-Platform.git" },
+      "featured": true
+    },
+    {
+      "id": 4,
+      "title": "Détection d'embouteillages par IA",
+      "description": "Solution de détection d'embouteillages par IA (YOLOv9) avec interface web interactive. Réalisée lors du hackathon CONIA 2025 en 3 jours. Lauréat du Ministère des Postes et Télécommunications.",
+      "emoji": "🚦",
+      "image": "",
+      "tags": ["Angular", "Flask", "Python", "YOLOv9"],
+      "links": { "demo": "", "github": "https://gitlab.com/ChrisEvrad/traffic-analysis-microservice-final.git" },
+      "featured": true
+    },
+    {
+      "id": 5,
+      "title": "Chatbot IA — La Poste",
+      "description": "Maintenance et évolution d'une application IA intégrant Ollama. Refactorisation du code, optimisation des modèles LLM, intégration audio et renforcement de la sécurité applicative.",
+      "emoji": "💬",
+      "image": "",
+      "tags": ["Ollama", "Django", "React JS", "LLM"],
+      "links": { "demo": "", "github": "https://github.com/amin690/RAGAdmin-V3.git" },
+      "featured": false
+    },
+    {
+      "id": 6,
+      "title": "Promotion du tourisme",
+      "description": "Pipeline Big Data de bout en bout pour le tourisme en train en Nouvelle-Aquitaine, réalisé dans le cadre d'un défi SNCF. Le projet couvre l'ingestion temps réel via Kafka, le stockage en Data Lake (MinIO), la transformation des données avec PySpark selon l'architecture Bronze/Silver/Gold, et l'orchestration des pipelines avec Airflow le tout conteneurisé avec Docker. Les données enrichies (gares, POI touristiques, pistes cyclables, disponibilités TGV MAX) alimentent une application Streamlit de cartographie interactive avec comparateur d'empreinte carbone.",
+      "emoji": "💬",
+      "image": "",
+      "tags": ["Kafka", "Spark", "Min IO", "Airflow", "Docker", "Streamlit"],
+      "links": { "demo": "", "github": "https://github.com/leaticia-wandji-3il/OpenData_SNCF.git" },
+      "featured": false
+    },
+    {
+      "id": 7,
+      "title": "Gestion des examens universitaires",
+      "description": "Application critique de gestion des examens universitaires avec Spring Boot. Sécurisation des anonymats, intégrité des bases de données et digitalisation des résultats.",
+      "emoji": "📋",
+      "image": "",
+      "tags": ["Java", "Spring Boot", "SQL"],
+      "links": { "demo": "", "github": "https://gitlab.com/wackfy4x/anonymat_stage.git" },
+      "featured": false
+    }
+  ],
+
+  "experiences": [
+    {
+      "id": 1,
+      "title": "Développeur Fullstack & IA",
+      "company": "La Poste",
+      "period": "Janvier 2026",
+      "type": "Projet",
+      "location": "Limoges, France",
+      "description": "Appropriation, maintenance et évolution d'une base de code existante avec méthodes agiles. Refactorisation complète, optimisation des modèles LLM, intégration de messages audio et renforcement de la sécurité applicative.",
+      "tags": ["Ollama", "Django", "React JS", "LLM", "Agile"]
+    },
+    {
+      "id": 2,
+      "title": "Développeur Web & Mobile",
+      "company": "DoWhile SARL",
+      "period": "Mai 2025 – Septembre 2025",
+      "type": "Stage",
+      "location": "Yaoundé, Cameroun",
+      "description": "Analyse des besoins clients et rédaction des spécifications techniques. Conception de l'architecture, développement des fonctionnalités clés, rédaction des documents d'architecture et validation directe des livrables avec le client.",
+      "tags": ["React Native", "Express.js", "MongoDB"]
+    },
+    {
+      "id": 3,
+      "title": "Assistant Direction des Services Informatiques",
+      "company": "Université Saint Jean",
+      "period": "Juillet 2024 – Septembre 2024",
+      "type": "Stage",
+      "location": "Yaoundé, Cameroun",
+      "description": "Conception d'une application critique de gestion des examens avec Spring Boot. Sécurisation des anonymats, intégrité des bases de données, implémentation de la logique métier et digitalisation du processus de traitement des résultats.",
+      "tags": ["Java", "Spring Boot", "SQL"]
+    }
+  ],
+
+  "hackathons": [
+    {
+      "id": 1,
+      "name": "Nuit de l'Info 2025",
+      "organizer": "Nuit de l'Info — France",
+      "date": "2025",
+      "result": "Lauréat",
+      "description": "Développement d'un serious game sur la résilience numérique sous contrainte de temps, en réponse aux pannes mondiales des GAFAM.",
+      "tags": ["React JS", "Django"]
+    },
+    {
+      "id": 2,
+      "name": "CONIA 2025",
+      "organizer": "Ministère des Postes et Télécommunications — Cameroun",
+      "date": "2025",
+      "result": "Lauréat",
+      "description": "Conception d'une solution de détection d'embouteillages par IA (YOLOv9) avec interface web interactive lors d'un hackathon de 3 jours.",
+      "tags": ["Angular", "Flask", "Python", "YOLOv9"]
+    }
+  ],
+
+  "formations": [
+    {
+      "id": 1,
+      "degree": "Business Intelligence & Big Data — Bac+5 Ingénieur",
+      "school": "3iL",
+      "period": "Septembre 2025 – Présent",
+      "location": "Limoges, France",
+      "description": "Formation d'ingénieur spécialisée en Business Intelligence, Big Data et Data Engineering. Traitement de données massives, visualisation, architecture décisionnelle et cloud.",
+      "tags": ["Big Data", "BI", "Data Engineering", "Cloud", "Azure"]
+    },
+    {
+      "id": 2,
+      "degree": "Licence — Informatique & Systèmes d'Information",
+      "school": "Institut Universitaire Saint Jean",
+      "period": "Septembre 2021 – 2024",
+      "location": "Yaoundé, Cameroun",
+      "description": "Fondamentaux du développement logiciel, bases de données, réseaux et systèmes d'information. Projets en Java, Spring Boot et Angular.",
+      "tags": ["Java", "SQL", "Réseaux", "Algorithmes", "Angular", "Architecture logicielle", "Gestion de projet"]
+    }
+  ],
+
+  "certifications": [
+    {
+      "id": 1,
+      "title": "Docker Foundations Professional Certificate",
+      "issuer": "Docker, Inc",
+      "date": "Février 2026",
+      "icon": "🐳",
+      "credentialId": "",
+      "link": ""
+    },
+    {
+      "id": 2,
+      "title": "Java FullStack Developer",
+      "issuer": "Board Infinity",
+      "date": "Juillet 2025",
+      "icon": "☕",
+      "credentialId": "",
+      "link": ""
+    },
+    {
+      "id": 3,
+      "title": "JavaScript Essentials 1",
+      "issuer": "JS Institute",
+      "date": "Septembre 2024",
+      "icon": "🟨",
+      "credentialId": "",
+      "link": ""
+    }
+  ],
+
+  "softSkills": [
+    { "id": 1, "label": "Autonomie",      "icon": "🎯" },
+    { "id": 2, "label": "Rigueur",        "icon": "✅" },
+    { "id": 3, "label": "Esprit critique", "icon": "🔍" }
+  ],
+
+  "languages": [
+    { "id": 1, "name": "Français", "level": "Langue maternelle",          "percent": 100 },
+    { "id": 2, "name": "Anglais",  "level": "Technique et Professionnel", "percent": 75  }
+  ],
+
+  "contact": {
+    "availability": "Je recherche un stage dès Avril ou une Alternance pour Septembre 2026 — mobile partout en France.",
+    "responseTime": "Réponse sous 24h"
+  },
+
+  "footer": {
+    "copyright": "2026",
+    "builtWith": "React & ❤"
+  }
+}
