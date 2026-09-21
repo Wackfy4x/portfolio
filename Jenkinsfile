@@ -78,7 +78,7 @@ pipeline {
         stage('Deploy to VPS') {
             steps {
                 withCredentials([
-                    sshUserPrivateKey(credentialsId: 'vps-ssh-key', keyFileVariable: 'SSH_KEY', usernameVariable: 'SSH_USER'),
+                    sshUserPrivateKey(credentialsId: '4d577965-4441-46c1-a2b2-f41c58bde8e9', keyFileVariable: 'SSH_KEY', usernameVariable: 'SSH_USER'),
                     string(credentialsId: 'vps-host', variable: 'VPS_HOST')
                 ]) {
                     sh '''
