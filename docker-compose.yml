@@ -1,8 +1,10 @@
-# Deployed to the VPS by the Jenkins pipeline. IMAGE_TAG and HOST_PORT are
-# written into a sibling .env file on each deploy (see the Jenkinsfile).
+# Deployed locally by the Jenkins pipeline (Jenkins runs on this same VPS,
+# so the image never leaves the host — no registry involved). IMAGE_TAG and
+# HOST_PORT are written into a sibling .env file on each deploy (see the
+# Jenkinsfile).
 services:
   portfolio:
-    image: ghcr.io/CHANGE_ME_GITHUB_OWNER/portfolio-v3:${IMAGE_TAG:-latest}
+    image: portfolio-v3:${IMAGE_TAG:-latest}
     container_name: portfolio
     restart: unless-stopped
     ports:
