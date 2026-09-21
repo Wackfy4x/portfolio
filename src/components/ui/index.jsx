@@ -1,20 +1,21 @@
 import { Icon } from './Icons.jsx';
+import { useReveal } from '../../hooks/useReveal.js';
 
 /* ── SectionDivider ── */
 export function SectionDivider() {
+  const ref = useReveal();
   return (
-    <div className="section-divider" aria-hidden="true">
-      <div className="section-divider__dot" />
-      <div className="section-divider__line" />
-      <div className="section-divider__dot" />
+    <div ref={ref} className="section-divider" aria-hidden="true">
+      <div className="section-divider__rule" />
     </div>
   );
 }
 
 /* ── SectionHeader ── */
 export function SectionHeader({ eyebrow, title, subtitle }) {
+  const ref = useReveal();
   return (
-    <div className="section-header">
+    <div ref={ref} className="section-header reveal">
       {eyebrow && <p className="section-eyebrow">{eyebrow}</p>}
       <h2 className="section-title">{title}</h2>
       {subtitle && <p className="section-subtitle">{subtitle}</p>}

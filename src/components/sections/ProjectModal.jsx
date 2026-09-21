@@ -151,7 +151,7 @@ export default function ProjectModal({ project, onClose }) {
       <style>{`
         .modal-backdrop {
           position: fixed; inset: 0;
-          background: rgba(5, 8, 14, 0.85);
+          background: var(--scrim);
           backdrop-filter: blur(14px);
           z-index: 200;
           display: flex; align-items: center; justify-content: center;
@@ -168,7 +168,6 @@ export default function ProjectModal({ project, onClose }) {
           max-height: 90vh; overflow-y: auto;
           display: flex; flex-direction: column;
           animation: slideModal .3s cubic-bezier(.4,0,.2,1);
-          box-shadow: 0 24px 64px rgba(0,0,0,.6), 0 0 0 1px rgba(0,229,195,.08);
         }
         @keyframes slideModal {
           from { opacity: 0; transform: translateY(20px) scale(.97); }
@@ -224,18 +223,18 @@ export default function ProjectModal({ project, onClose }) {
         .modal-gallery__arrow {
           position: absolute; top: 50%; transform: translateY(-50%);
           width: 36px; height: 36px; border-radius: 50%;
-          background: rgba(10,14,20,.75); backdrop-filter: blur(8px);
-          border: 1px solid var(--border); display: flex; align-items: center;
-          justify-content: center; color: var(--text-primary);
+          background: var(--chip-dark); backdrop-filter: blur(8px);
+          border: 1px solid rgba(255,255,255,.15); display: flex; align-items: center;
+          justify-content: center; color: #fff;
           cursor: pointer; transition: all var(--transition); z-index: 2;
         }
-        .modal-gallery__arrow:hover { background: rgba(0,229,195,.15); border-color: var(--accent); color: var(--accent); }
+        .modal-gallery__arrow:hover { background: var(--accent); border-color: var(--accent); color: #fff; }
         .modal-gallery__arrow--left  { left: 10px; }
         .modal-gallery__arrow--right { right: 10px; }
         .modal-gallery__counter {
           position: absolute; bottom: 10px; right: 12px;
-          font-family: var(--font-mono); font-size: 10px; color: var(--text-secondary);
-          background: rgba(10,14,20,.7); padding: 3px 8px; border-radius: 10px; backdrop-filter: blur(4px);
+          font-family: var(--font-mono); font-size: 10px; color: rgba(255,255,255,.85);
+          background: var(--chip-dark); padding: 3px 8px; border-radius: 10px; backdrop-filter: blur(4px);
         }
         .modal-gallery__thumbs { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 4px; }
         .modal-gallery__thumb {

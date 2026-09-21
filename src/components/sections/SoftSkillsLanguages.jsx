@@ -1,6 +1,7 @@
 import data from '../../data/portfolio.json';
 import { SectionHeader } from '../ui/index.jsx';
 import { Icon } from '../ui/Icons.jsx';
+import { useReveal } from '../../hooks/useReveal.js';
 
 /* Icône par soft skill */
 const SOFT_ICONS = {
@@ -9,8 +10,19 @@ const SOFT_ICONS = {
   'esprit critique':'layers',
 };
 
+function LangBar({ percent }) {
+  const ref = useReveal();
+  return (
+    <div ref={ref} className="ssl__lang-bar reveal">
+      <div className="ssl__lang-fill" style={{ '--pct': `${percent}%` }} />
+    </div>
+  );
+}
+
 export default function SoftSkillsLanguages() {
   const { softSkills, languages } = data;
+  const softRef = useReveal();
+  const langRef = useReveal();
   if (!softSkills?.length && !languages?.length) return null;
 
   return (
@@ -21,7 +33,7 @@ export default function SoftSkillsLanguages() {
 
           {/* Soft Skills */}
           {softSkills?.length > 0 && (
-            <div className="ssl__block">
+            <div ref={softRef} className="ssl__block reveal">
               <h3 className="ssl__block-title">Soft Skills</h3>
               <div className="ssl__soft-list">
                 {softSkills.map(s => {
@@ -41,7 +53,7 @@ export default function SoftSkillsLanguages() {
 
           {/* Langues */}
           {languages?.length > 0 && (
-            <div className="ssl__block">
+            <div ref={langRef} className="ssl__block reveal">
               <h3 className="ssl__block-title">Langues</h3>
               <div className="ssl__lang-list">
                 {languages.map(lang => (
@@ -53,9 +65,7 @@ export default function SoftSkillsLanguages() {
                       </span>
                       <span className="ssl__lang-level">{lang.level}</span>
                     </div>
-                    <div className="ssl__lang-bar">
-                      <div className="ssl__lang-fill" style={{ width: `${lang.percent}%` }} />
-                    </div>
+                    <LangBar percent={lang.percent} />
                   </div>
                 ))}
               </div>
@@ -111,9 +121,11 @@ export default function SoftSkillsLanguages() {
           overflow: hidden; border: 1px solid var(--border);
         }
         .ssl__lang-fill {
-          height: 100%; background: linear-gradient(to right, var(--accent-dim), var(--accent));
-          border-radius: 3px; transition: width 1s cubic-bezier(.4,0,.2,1);
+          height: 100%; width: var(--pct); background: var(--accent);
+          border-radius: 3px; transform: scaleX(0); transform-origin: left;
+          transition: transform 1s var(--ease-out);
         }
+        .ssl__lang-bar.is-visible .ssl__lang-fill { transform: scaleX(1); }
         @media (max-width: 640px) { .ssl__grid { grid-template-columns: 1fr; } }
       `}</style>
     </section>

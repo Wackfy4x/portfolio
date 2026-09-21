@@ -1,6 +1,7 @@
 import data from '../../data/portfolio.json';
 import { SectionHeader } from '../ui/index.jsx';
 import { Icon } from '../ui/Icons.jsx';
+import { useReveal } from '../../hooks/useReveal.js';
 
 /* Icône de certification selon l'émetteur */
 function CertBadge({ cert }) {
@@ -11,9 +12,9 @@ function CertBadge({ cert }) {
   );
 }
 
-function CertCard({ cert }) {
+function CertCard({ cert, index }) {
   return (
-    <article className="cert-card card">
+    <article className="cert-card card" style={{ '--i': index }}>
       <CertBadge cert={cert} />
       <div className="cert-card__body">
         <h3 className="cert-card__title">{cert.title}</h3>
@@ -39,6 +40,7 @@ function CertCard({ cert }) {
 
 export default function Certifications() {
   const { certifications } = data;
+  const gridRef = useReveal();
   return (
     <section id="certifications">
       <div className="container">
@@ -47,8 +49,8 @@ export default function Certifications() {
           title="Certifications"
           subtitle="Certifications professionnelles obtenues."
         />
-        <div className="certs__grid">
-          {certifications.map(cert => <CertCard key={cert.id} cert={cert} />)}
+        <div ref={gridRef} className="certs__grid reveal-stagger">
+          {certifications.map((cert, i) => <CertCard key={cert.id} cert={cert} index={i} />)}
         </div>
       </div>
 

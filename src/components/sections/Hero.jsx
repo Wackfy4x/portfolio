@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import data from '../../data/portfolio.json';
 import { Avatar, SocialLinks } from '../ui/index.jsx';
 import { Icon } from '../ui/Icons.jsx';
+import { useRevealOnce } from '../../hooks/useReveal.js';
 
 function TypingText({ text }) {
   const [displayed, setDisplayed] = useState('');
@@ -22,8 +23,36 @@ function TypingText({ text }) {
   );
 }
 
+/* Counts a numeric value up once it scrolls into view; keeps any non-digit
+   suffix (e.g. "5+") static so we don't have to parse/rebuild it. */
+function CountUp({ value }) {
+  const [display, setDisplay] = useState('0');
+  const target = parseInt(value, 10);
+  const suffix = value.replace(/^[0-9]+/, '');
+
+  const ref = useRevealOnce(() => {
+    if (Number.isNaN(target) || target <= 0) { setDisplay(value); return; }
+    const duration = 900;
+    const start = performance.now();
+    const step = now => {
+      const progress = Math.min((now - start) / duration, 1);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      setDisplay(String(Math.round(eased * target)));
+      if (progress < 1) requestAnimationFrame(step);
+    };
+    requestAnimationFrame(step);
+  });
+
+  return <span ref={ref}>{Number.isNaN(target) ? value : display + suffix}</span>;
+}
+
 export default function Hero() {
   const { profile, hero } = data;
+
+  const nameWords = profile.name.split(' ');
+  const mid = Math.ceil(nameWords.length / 2);
+  const nameLine1 = nameWords.slice(0, mid).join(' ');
+  const nameLine2 = nameWords.slice(mid).join(' ');
 
   return (
     <section id="hero" className="hero">
@@ -33,13 +62,19 @@ export default function Hero() {
 
           {/* ── Left ── */}
           <div className="hero__content">
-            <p className="hero__greeting animate-fadeup delay-1">{hero.greeting}</p>
+            <div className="hero__eyebrow-row animate-fadeup delay-1">
+              <p className="hero__greeting">{hero.greeting}</p>
+              {profile.available && (
+                <span className="hero__available">
+                  <span className="hero__available-dot" />
+                  Disponible
+                </span>
+              )}
+            </div>
 
             <h1 className="hero__name animate-fadeup delay-2">
-              {profile.name.split(' ').slice(0, 2).join(' ')}{' '}
-              <span className="hero__name-accent">
-                {profile.name.split(' ').slice(2).join(' ')}
-              </span>
+              <span className="hero__name-line">{nameLine1}</span>
+              <span className="hero__name-line hero__name-accent">{nameLine2}</span>
             </h1>
 
             <p className="hero__title animate-fadeup delay-3">
@@ -88,15 +123,6 @@ export default function Hero() {
           {/* ── Right — card ── */}
           <div className="hero__sidebar animate-fadeup delay-3">
             <div className="hero-card card">
-              <div className="hero-card__availability">
-                {profile.available && (
-                  <span className="hero-card__badge">
-                    <span className="hero-card__badge-dot" />
-                    Disponible
-                  </span>
-                )}
-              </div>
-
               <Avatar src={profile.avatar} name={profile.name} size={76} />
 
               <div className="hero-card__info">
@@ -113,7 +139,7 @@ export default function Hero() {
               <div className="hero-card__stats">
                 {hero.stats.map(stat => (
                   <div key={stat.id} className="hero-stat">
-                    <span className="hero-stat__value">{stat.value}</span>
+                    <span className="hero-stat__value"><CountUp value={stat.value} /></span>
                     <span className="hero-stat__label">{stat.label}</span>
                   </div>
                 ))}
@@ -132,17 +158,32 @@ export default function Hero() {
           display: grid; grid-template-columns: 1.1fr 0.9fr;
           gap: 80px; align-items: center; padding: 60px 0;
         }
+        .hero__eyebrow-row {
+          display: flex; align-items: center; gap: 14px;
+          margin-bottom: 18px;
+        }
         .hero__greeting {
           font-family: var(--font-mono); font-size: 12px;
           letter-spacing: 0.15em; text-transform: uppercase;
-          color: var(--accent); margin-bottom: 16px;
+          color: var(--accent);
+        }
+        .hero__available {
+          display: inline-flex; align-items: center; gap: 6px;
+          font-family: var(--font-mono); font-size: 10px;
+          color: var(--accent-dim); background: var(--accent-bg);
+          border: 1px solid var(--border); padding: 4px 10px; border-radius: 20px;
+        }
+        .hero__available-dot {
+          width: 6px; height: 6px; border-radius: 50%; background: var(--accent);
+          animation: pulse-ring 2s ease-out infinite;
         }
         .hero__name {
           font-family: var(--font-display);
-          font-size: clamp(32px, 4.5vw, 62px);
-          font-weight: 800; line-height: 1.05;
-          letter-spacing: -0.025em; margin-bottom: 16px;
+          font-size: clamp(24px, 2.9vw, 38px);
+          font-weight: 800; line-height: 1.16;
+          letter-spacing: -0.015em; margin-bottom: 18px;
         }
+        .hero__name-line { display: block; }
         .hero__name-accent { color: var(--accent); }
         .hero__title {
           font-family: var(--font-mono);
@@ -164,23 +205,13 @@ export default function Hero() {
           font-family: var(--font-mono); font-size: 11px;
           padding: 5px 12px; border-radius: 20px; border: 1px solid var(--border);
         }
-        .hero__badge--seek { color: var(--accent); background: var(--accent-bg); border-color: rgba(0,229,195,0.3); }
+        .hero__badge--seek { color: var(--accent-dim); background: var(--accent-bg); border-color: var(--border-hover); }
         .hero__badge--mobility { color: var(--text-secondary); background: var(--bg-raised); }
         .hero__actions { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 28px; }
 
         /* Card */
-        .hero-card { padding: 26px 22px; display: flex; flex-direction: column; align-items: center; text-align: center; }
-        .hero-card__availability { width: 100%; display: flex; justify-content: flex-end; margin-bottom: 16px; }
-        .hero-card__badge {
-          display: inline-flex; align-items: center; gap: 6px;
-          font-family: var(--font-mono); font-size: 10px;
-          color: var(--accent); background: var(--accent-bg);
-          border: 1px solid var(--border); padding: 4px 10px; border-radius: 20px;
-        }
-        .hero-card__badge-dot {
-          width: 6px; height: 6px; border-radius: 50%; background: var(--accent);
-        }
-        .hero-card__info { margin-top: 12px; }
+        .hero-card { padding: 30px 22px 26px; display: flex; flex-direction: column; align-items: center; text-align: center; }
+        .hero-card__info { margin-top: 16px; }
         .hero-card__name { font-family: var(--font-display); font-size: 15px; font-weight: 700; line-height: 1.3; }
         .hero-card__email { font-family: var(--font-mono); font-size: 10px; color: var(--text-secondary); margin-top: 4px; }
         .hero-card__location {

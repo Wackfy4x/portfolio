@@ -1,11 +1,13 @@
 import data from '../../data/portfolio.json';
 import { SectionHeader, TagList } from '../ui/index.jsx';
 import { Icon } from '../ui/Icons.jsx';
+import { useReveal } from '../../hooks/useReveal.js';
 
 /* ── Shared TimelineItem ── */
 function TimelineItem({ period, title, org, type, location, description, tags }) {
+  const ref = useReveal();
   return (
-    <div className="timeline__item">
+    <div ref={ref} className="timeline__item reveal">
       <div className="timeline__dot" />
       <p className="timeline__period">{period}</p>
       <h3 className="timeline__title">{title}</h3>
@@ -87,6 +89,7 @@ export function Formations() {
 /* ── Hackathons ── */
 export function Hackathons() {
   const { hackathons } = data;
+  const gridRef = useReveal();
   if (!hackathons?.length) return null;
 
   return (
@@ -97,9 +100,9 @@ export function Hackathons() {
           title="Hackathons"
           subtitle="Compétitions et challenges techniques remportés."
         />
-        <div className="hackathons__grid">
-          {hackathons.map(h => (
-            <article key={h.id} className="hackathon-card card">
+        <div ref={gridRef} className="hackathons__grid reveal-stagger">
+          {hackathons.map((h, i) => (
+            <article key={h.id} className="hackathon-card card" style={{ '--i': i }}>
               <div className="hackathon-card__header">
                 <div className="hackathon-card__trophy">
                   <Icon name="trophy" size={24} color="#f0c040" strokeWidth={1.5} />

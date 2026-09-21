@@ -42,6 +42,7 @@ const UI_ICONS = {
   chevronLeft:  <polyline points="15 18 9 12 15 6"/>,
   chevronRight: <polyline points="9 18 15 12 9 6"/>,
   chevronDown:  <polyline points="6 9 12 15 18 9"/>,
+  chevronUp:    <polyline points="18 15 12 9 6 15"/>,
   arrowUpRight: (
     <>
       <path d="M7 17 17 7"/>
@@ -390,26 +391,26 @@ const TECH_DEFS = {
     ),
   },
   ollama: {
-    color: '#00e5c3',
+    color: '#2563eb',
     svg: (
       <>
-        <circle cx="12" cy="12" r="10" fill="none" stroke="#00e5c3" strokeWidth="1.5"/>
-        <circle cx="9.5"  cy="10.5" r="1.5" fill="#00e5c3"/>
-        <circle cx="14.5" cy="10.5" r="1.5" fill="#00e5c3"/>
-        <path d="M8.5 15c1 1.5 2.5 2.2 3.5 2.2s2.5-.7 3.5-2.2" fill="none" stroke="#00e5c3" strokeWidth="1.5" strokeLinecap="round"/>
+        <circle cx="12" cy="12" r="10" fill="none" stroke="#2563eb" strokeWidth="1.5"/>
+        <circle cx="9.5"  cy="10.5" r="1.5" fill="#2563eb"/>
+        <circle cx="14.5" cy="10.5" r="1.5" fill="#2563eb"/>
+        <path d="M8.5 15c1 1.5 2.5 2.2 3.5 2.2s2.5-.7 3.5-2.2" fill="none" stroke="#2563eb" strokeWidth="1.5" strokeLinecap="round"/>
       </>
     ),
   },
   yolo: {
-    color: '#00e5c3',
+    color: '#2563eb',
     svg: (
       <>
-        <rect width="20" height="20" x="2" y="2" rx="3" fill="none" stroke="#00e5c3" strokeWidth="1.5"/>
-        <rect width="8" height="8" x="8" y="8" rx="1.5" fill="none" stroke="#00e5c3" strokeWidth="1.5"/>
-        <line x1="5.5" y1="5.5" x2="8"   y2="8"   stroke="#00e5c3" strokeWidth="1.2"/>
-        <line x1="18.5" y1="5.5" x2="16"  y2="8"   stroke="#00e5c3" strokeWidth="1.2"/>
-        <line x1="5.5"  y1="18.5" x2="8"  y2="16"  stroke="#00e5c3" strokeWidth="1.2"/>
-        <line x1="18.5" y1="18.5" x2="16" y2="16"  stroke="#00e5c3" strokeWidth="1.2"/>
+        <rect width="20" height="20" x="2" y="2" rx="3" fill="none" stroke="#2563eb" strokeWidth="1.5"/>
+        <rect width="8" height="8" x="8" y="8" rx="1.5" fill="none" stroke="#2563eb" strokeWidth="1.5"/>
+        <line x1="5.5" y1="5.5" x2="8"   y2="8"   stroke="#2563eb" strokeWidth="1.2"/>
+        <line x1="18.5" y1="5.5" x2="16"  y2="8"   stroke="#2563eb" strokeWidth="1.2"/>
+        <line x1="5.5"  y1="18.5" x2="8"  y2="16"  stroke="#2563eb" strokeWidth="1.2"/>
+        <line x1="18.5" y1="18.5" x2="16" y2="16"  stroke="#2563eb" strokeWidth="1.2"/>
       </>
     ),
   },

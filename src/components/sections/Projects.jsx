@@ -2,13 +2,14 @@ import { useState } from 'react';
 import data from '../../data/portfolio.json';
 import { SectionHeader, TagList } from '../ui/index.jsx';
 import { Icon } from '../ui/Icons.jsx';
+import { useReveal } from '../../hooks/useReveal.js';
 import ProjectModal from './ProjectModal.jsx';
 
 /* Détecte si un lien est GitLab */
 const isGitlab = url => url && url.includes('gitlab.com');
 const isGithub = url => url && url.includes('github.com');
 
-function ProjectCard({ project, onOpen }) {
+function ProjectCard({ project, onOpen, index, large }) {
   /* Lien repo unique (github ou gitlab) */
   const repoUrl  = project.links?.github || '';
   const repoIcon = isGitlab(repoUrl) ? 'gitlab' : 'github';
@@ -16,9 +17,9 @@ function ProjectCard({ project, onOpen }) {
 
   return (
     <article
-      className={`project-card card${project.featured ? ' project-card--featured' : ''}`}
+      className={`project-card card${project.featured ? ' project-card--featured' : ''}${large ? ' project-card--large' : ''}`}
       onClick={() => onOpen(project)}
-      style={{ cursor: 'pointer' }}
+      style={{ cursor: 'pointer', '--i': index }}
     >
       {/* Thumbnail */}
       <div className="project-card__thumb">
@@ -66,6 +67,7 @@ export default function Projects() {
   const { projects } = data;
   const [showAll, setShowAll] = useState(false);
   const [activeProject, setActiveProject] = useState(null);
+  const gridRef = useReveal();
 
   const visible = showAll ? projects : projects.slice(0, 3);
 
@@ -78,9 +80,9 @@ export default function Projects() {
           subtitle="Une sélection de projets sur lesquels j'ai travaillé. Cliquez pour en savoir plus."
         />
 
-        <div className="projects__grid">
-          {visible.map(project => (
-            <ProjectCard key={project.id} project={project} onOpen={setActiveProject} />
+        <div ref={gridRef} className="projects__grid reveal-stagger">
+          {visible.map((project, i) => (
+            <ProjectCard key={project.id} project={project} onOpen={setActiveProject} index={i} large={i === 0} />
           ))}
         </div>
 
@@ -105,9 +107,15 @@ export default function Projects() {
           display: grid;
           grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
           gap: 22px;
+          align-items: start;
         }
         .project-card { display: flex; flex-direction: column; overflow: hidden; }
-        .project-card--featured { border-color: rgba(0,229,195,0.22); }
+        .project-card--featured { border-color: var(--border-hover); }
+        .project-card--large { grid-column: span 2; }
+        .project-card--large .project-card__thumb { height: 220px; }
+        .project-card--large .project-card__emoji-wrap { width: 104px; height: 104px; }
+        .project-card--large .project-card__emoji-char { font-size: 48px; }
+        @media (max-width: 780px) { .project-card--large { grid-column: span 1; } }
 
         .project-card__thumb {
           position: relative;
@@ -128,11 +136,10 @@ export default function Projects() {
           border-radius: 20px;
           background: var(--bg-overlay);
           border: 1px solid var(--border);
-          transition: transform 0.3s ease, box-shadow 0.3s ease;
+          transition: transform var(--dur-fast) var(--ease-out), border-color var(--transition);
         }
         .project-card:hover .project-card__emoji-wrap {
           transform: scale(1.1);
-          box-shadow: 0 0 24px rgba(0,229,195,0.15);
           border-color: var(--border-hover);
         }
         .project-card__emoji-char {
@@ -143,7 +150,7 @@ export default function Projects() {
 
         .project-card__overlay {
           position: absolute; inset: 0;
-          background: rgba(5, 8, 14, 0.72);
+          background: var(--scrim);
           backdrop-filter: blur(4px);
           display: flex; flex-direction: column;
           align-items: center; justify-content: center;

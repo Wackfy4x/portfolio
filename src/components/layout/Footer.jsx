@@ -1,8 +1,10 @@
 import data from '../../data/portfolio.json';
 import { Icon } from '../ui/Icons.jsx';
+import { useReveal } from '../../hooks/useReveal.js';
 
 export default function Footer() {
   const { profile, footer } = data;
+  const ref = useReveal();
 
   const navLinks = ['#about','#skills','#projects','#experience','#hackathons','#formations','#certifications','#contact'];
 
@@ -16,7 +18,7 @@ export default function Footer() {
   return (
     <footer className="footer">
       <div className="container">
-        <div className="footer__inner">
+        <div ref={ref} className="footer__inner reveal">
           <a href="#hero" className="footer__logo">
             <span style={{ color: 'var(--accent)' }}>&lt;/&gt;</span> {profile.name.split(' ')[0]}
           </a>

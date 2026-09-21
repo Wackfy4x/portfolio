@@ -2,10 +2,11 @@ import { useState } from 'react';
 import data from '../../data/portfolio.json';
 import { SectionHeader } from '../ui/index.jsx';
 import { TechIcon } from '../ui/Icons.jsx';
+import { useReveal } from '../../hooks/useReveal.js';
 
-function SkillCard({ skill }) {
+function SkillCard({ skill, index }) {
   return (
-    <div className="skill-card">
+    <div className="skill-card" style={{ '--i': index }}>
       <div className="skill-card__icon-wrap">
         <TechIcon name={skill.name} size={32} />
       </div>
@@ -24,6 +25,7 @@ export default function Skills() {
   const filtered = activeCategory === 'Tous'
     ? skills
     : skills.filter(s => s.category === activeCategory);
+  const gridRef = useReveal();
 
   return (
     <section id="skills">
@@ -44,8 +46,8 @@ export default function Skills() {
             </button>
           ))}
         </div>
-        <div className="skills__grid">
-          {filtered.map(skill => <SkillCard key={skill.id} skill={skill} />)}
+        <div ref={gridRef} className="skills__grid reveal-stagger">
+          {filtered.map((skill, i) => <SkillCard key={skill.id} skill={skill} index={i} />)}
         </div>
       </div>
 
@@ -71,13 +73,12 @@ export default function Skills() {
           align-items: center;
           gap: 12px;
           text-align: center;
-          transition: border-color var(--transition), transform var(--transition), box-shadow var(--transition);
+          transition: border-color var(--transition), transform var(--transition);
           cursor: default;
         }
         .skill-card:hover {
           border-color: var(--border-hover);
           transform: translateY(-4px);
-          box-shadow: var(--shadow-glow);
         }
         .skill-card__icon-wrap {
           width: 52px;

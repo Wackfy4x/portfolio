@@ -2,11 +2,14 @@ import { useState } from 'react';
 import data from '../../data/portfolio.json';
 import { SectionHeader, SocialLinks } from '../ui/index.jsx';
 import { Icon } from '../ui/Icons.jsx';
+import { useReveal } from '../../hooks/useReveal.js';
 
 export default function Contact() {
   const { profile, contact } = data;
   const [form, setForm] = useState({ name: '', email: '', subject: '', message: '' });
   const [status, setStatus] = useState('idle');
+  const infoRef = useReveal();
+  const formRef = useReveal();
 
   const handleChange = e => setForm(prev => ({ ...prev, [e.target.name]: e.target.value }));
 
@@ -37,7 +40,7 @@ export default function Contact() {
 
         <div className="contact__inner">
           {/* Left — info */}
-          <div className="contact__info">
+          <div ref={infoRef} className="contact__info reveal-side">
             <p className="contact__response-time">
               <span className="contact__dot" />
               {contact.responseTime}
@@ -64,7 +67,7 @@ export default function Contact() {
           </div>
 
           {/* Right — form */}
-          <form className="contact__form" onSubmit={handleSubmit} noValidate>
+          <form ref={formRef} className="contact__form reveal" onSubmit={handleSubmit} noValidate>
             <div className="grid-2">
               <div className="form-group">
                 <label className="form-label" htmlFor="name">Nom</label>

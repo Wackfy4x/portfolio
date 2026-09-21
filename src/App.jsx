@@ -1,8 +1,10 @@
 import Navbar from './components/layout/Navbar.jsx';
 import Footer from './components/layout/Footer.jsx';
+import ScrollToTop from './components/layout/ScrollToTop.jsx';
 import { SectionDivider } from './components/ui/index.jsx';
 
 import Hero                from './components/sections/Hero.jsx';
+import TechMarquee         from './components/sections/TechMarquee.jsx';
 import About               from './components/sections/About.jsx';
 import Skills              from './components/sections/Skills.jsx';
 import Projects            from './components/sections/Projects.jsx';
@@ -17,7 +19,7 @@ export default function App() {
       <Navbar />
       <main>
         <Hero />
-        <SectionDivider />
+        <TechMarquee />
         <About />
         <SectionDivider />
         <Skills />
@@ -37,6 +39,7 @@ export default function App() {
         <Contact />
       </main>
       <Footer />
+      <ScrollToTop />
     </>
   );
 }

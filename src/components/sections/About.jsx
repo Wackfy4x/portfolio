@@ -1,17 +1,20 @@
 import data from '../../data/portfolio.json';
 import { SectionHeader, SocialLinks } from '../ui/index.jsx';
 import { Icon } from '../ui/Icons.jsx';
+import { useReveal } from '../../hooks/useReveal.js';
 import profilep from '../../assets/profile.png';
 
 export default function About() {
   const { profile, about } = data;
+  const photoRef = useReveal();
+  const contentRef = useReveal();
 
   return (
     <section id="about">
       <div className="container">
         <div className="about__inner">
           {/* Photo */}
-          <div className="about__photo-wrap">
+          <div ref={photoRef} className="about__photo-wrap reveal">
             <div className="about__photo-frame">
               {profile.photo
                 ? <img src={profilep} alt={profile.name} className="about__photo" />
@@ -26,7 +29,7 @@ export default function About() {
           </div>
 
           {/* Text */}
-          <div className="about__content">
+          <div ref={contentRef} className="about__content reveal">
             <SectionHeader eyebrow="About me" title="À Propos de Moi" />
             <div className="about__paragraphs">
               {about.paragraphs.map((para, i) => (
@@ -34,8 +37,8 @@ export default function About() {
               ))}
             </div>
             <div className="about__details">
-              {about.details.map(item => (
-                <div key={item.label} className="about__detail-item">
+              {about.details.map((item, i) => (
+                <div key={`${item.label}-${i}`} className="about__detail-item">
                   <span className="about__detail-label">{item.label}</span>
                   <span className="about__detail-value">{item.value}</span>
                 </div>
