@@ -29,7 +29,7 @@ pipeline {
 
     environment {
         REGISTRY    = 'ghcr.io'
-        IMAGE_OWNER = 'Wackfy4x' // lowercase GitHub username/org
+        IMAGE_OWNER = 'wackfy4x' // lowercase GitHub username/org
         IMAGE_NAME  = 'portfolio-v3'
         IMAGE       = "${REGISTRY}/${IMAGE_OWNER}/${IMAGE_NAME}"
         DEPLOY_PATH = '/home/ubuntu/portfolio'         // absolute path on the VPS
