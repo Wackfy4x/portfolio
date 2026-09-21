@@ -60,7 +60,7 @@ pipeline {
         stage('Push image') {
             steps {
                 withCredentials([usernamePassword(
-                    credentialsId: 'github-registry-token',
+                    credentialsId: 'b1783795-1dff-4360-86a6-cae4fc702921',
                     usernameVariable: 'REG_USER',
                     passwordVariable: 'REG_TOKEN'
                 )]) {
