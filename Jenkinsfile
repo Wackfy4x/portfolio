@@ -23,8 +23,9 @@ pipeline {
 
     environment {
         IMAGE_NAME  = 'portfolio-v3'
-        DEPLOY_PATH = '/home/ubuntu/portfolio' // where docker-compose.yml/.env live
-        HOST_PORT   = '80'                     // port nginx is published on
+        DEPLOY_PATH = '/var/lib/jenkins/portfolio' // where docker-compose.yml/.env live — inside
+                                                    // Jenkins' own home, so it's always writable
+        HOST_PORT   = '80'                         // port nginx is published on
     }
 
     stages {
