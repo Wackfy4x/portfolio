@@ -121,7 +121,7 @@ Les tokens de design sont dans `src/styles/globals.css` :
 
 ```css
 :root {
-  --accent:     #00e5c3;   /* Couleur principale */
+  --accent:     #00e5c3;
   --bg-base:    #0a0e14;   /* Fond principal */
   --font-display: 'Syne', sans-serif;
   /* ... */
