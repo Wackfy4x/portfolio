@@ -4,7 +4,6 @@
 //
 // The only requirement on this host: the user Jenkins runs as must be able
 // to run `docker` / `docker compose` (e.g. be in the `docker` group).
-//
 // Also requires the "GitHub" plugin and a webhook on the repo pointing at
 // http://<jenkins-host>/github-webhook/ so pushes trigger this pipeline.
 
