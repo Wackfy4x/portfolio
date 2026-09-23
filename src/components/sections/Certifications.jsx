@@ -3,88 +3,65 @@ import { SectionHeader } from '../ui/index.jsx';
 import { Icon } from '../ui/Icons.jsx';
 import { useReveal } from '../../hooks/useReveal.js';
 
-/* Icône de certification selon l'émetteur */
-function CertBadge({ cert }) {
-  return (
-    <div className="cert-card__icon" aria-hidden="true">
-      <Icon name="award" size={24} color="var(--accent)" strokeWidth={1.5} />
-    </div>
-  );
-}
+function CertRow({ cert, index }) {
+  const hasLink = cert.link && cert.link !== '#';
+  const Tag = hasLink ? 'a' : 'div';
+  const linkProps = hasLink ? { href: cert.link, target: '_blank', rel: 'noopener noreferrer' } : {};
 
-function CertCard({ cert, index }) {
   return (
-    <article className="cert-card card" style={{ '--i': index }}>
-      <CertBadge cert={cert} />
-      <div className="cert-card__body">
-        <h3 className="cert-card__title">{cert.title}</h3>
-        <p className="cert-card__issuer">{cert.issuer}</p>
-        <div className="cert-card__meta">
-          <span className="cert-card__date">
-            <Icon name="calendar" size={11} color="var(--text-muted)" style={{ marginRight: 4, verticalAlign: 'middle' }} />
-            {cert.date}
-          </span>
-          {cert.credentialId && (
-            <span className="cert-card__id">ID: {cert.credentialId}</span>
-          )}
-        </div>
-        {cert.link && cert.link !== '#' && (
-          <a href={cert.link} className="cert-card__link" target="_blank" rel="noopener noreferrer">
-            <Icon name="externalLink" size={11} /> Voir le certificat
-          </a>
-        )}
-      </div>
-    </article>
+    <li style={{ '--i': index }}>
+      <Tag className="cert-row" {...linkProps}>
+        <span className="cert-row__date">{cert.date}</span>
+        <span className="cert-row__title">{cert.title}</span>
+        <span className="cert-row__issuer">{cert.issuer}</span>
+        <span className="cert-row__icon">
+          <Icon name={hasLink ? 'arrowUpRight' : 'award'} size={18} />
+        </span>
+      </Tag>
+    </li>
   );
 }
 
 export default function Certifications() {
   const { certifications } = data;
-  const gridRef = useReveal();
+  const listRef = useReveal();
   return (
-    <section id="certifications">
+    <section id="certifications" className="certs">
       <div className="container">
-        <SectionHeader
-          eyebrow="Certifications"
-          title="Certifications"
-          subtitle="Certifications professionnelles obtenues."
-        />
-        <div ref={gridRef} className="certs__grid reveal-stagger">
-          {certifications.map((cert, i) => <CertCard key={cert.id} cert={cert} index={i} />)}
-        </div>
+        <SectionHeader index="07" label="Certifications" title="Certifié *&* validé." />
+        <ul ref={listRef} className="certs__list reveal-stagger">
+          {certifications.map((cert, i) => <CertRow key={cert.id} cert={cert} index={i} />)}
+        </ul>
       </div>
 
       <style>{`
-        .certs__grid {
-          display: grid;
-          grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-          gap: 18px;
+        .certs__list { border-top: 1px solid var(--text-primary); }
+        .cert-row {
+          display: grid; grid-template-columns: 180px 1fr 220px 44px;
+          align-items: center; gap: 24px;
+          padding: 26px 0; border-bottom: 1px solid var(--border-hover);
+          transition: padding 0.5s var(--ease-out);
         }
-        .cert-card { display: flex; gap: 18px; padding: 22px; align-items: flex-start; }
-        .cert-card__icon {
-          width: 52px; height: 52px; flex-shrink: 0;
-          display: flex; align-items: center; justify-content: center;
-          background: var(--accent-bg); border: 1px solid var(--border);
-          border-radius: var(--radius-md);
+        .cert-row:hover { padding-left: 16px; padding-right: 16px; }
+        .cert-row__date { font-family: var(--font-mono); font-size: 12px; color: var(--text-secondary); }
+        .cert-row__title { font-size: clamp(20px, 2.2vw, 28px); font-weight: 600; letter-spacing: -0.035em; line-height: 1.1; }
+        .cert-row__issuer { font-family: var(--font-serif); font-style: italic; font-size: 20px; color: var(--accent); }
+        .cert-row__icon {
+          width: 44px; height: 44px; border-radius: 50%;
+          display: grid; place-items: center;
+          background: var(--bg-raised); color: var(--accent);
+          transition: background var(--transition), color var(--transition), transform 0.6s var(--ease-out);
         }
-        .cert-card__body { flex: 1; min-width: 0; }
-        .cert-card__title {
-          font-family: var(--font-display); font-size: 14px; font-weight: 700;
-          color: var(--text-primary); margin-bottom: 4px; line-height: 1.3;
+        .cert-row:hover .cert-row__icon { background: var(--accent); color: #fff; transform: rotate(-20deg) scale(1.08); }
+
+        @media (max-width: 800px) {
+          .cert-row { grid-template-columns: 1fr 44px; gap: 6px 16px; }
+          .cert-row__date { grid-row: 1; }
+          .cert-row__title { grid-row: 2; }
+          .cert-row__issuer { grid-row: 3; }
+          .cert-row__icon { grid-column: 2; grid-row: 1 / span 3; }
+          .cert-row:hover { padding-left: 0; padding-right: 0; }
         }
-        .cert-card__issuer { font-size: 12px; color: var(--accent); margin-bottom: 8px; }
-        .cert-card__meta { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 8px; align-items: center; }
-        .cert-card__date {
-          display: inline-flex; align-items: center;
-          font-family: var(--font-mono); font-size: 10px; color: var(--text-muted);
-        }
-        .cert-card__id { font-family: var(--font-mono); font-size: 10px; color: var(--text-muted); }
-        .cert-card__link {
-          display: inline-flex; align-items: center; gap: 5px;
-          font-family: var(--font-mono); font-size: 10px; color: var(--accent);
-          transition: opacity var(--transition);
-        }
-        .cert-card__link:hover { opacity: 0.7; }
       `}</style>
     </section>
   );

@@ -1,7 +1,6 @@
 import Navbar from './components/layout/Navbar.jsx';
 import Footer from './components/layout/Footer.jsx';
 import ScrollToTop from './components/layout/ScrollToTop.jsx';
-import { SectionDivider } from './components/ui/index.jsx';
 
 import Hero                from './components/sections/Hero.jsx';
 import TechMarquee         from './components/sections/TechMarquee.jsx';
@@ -21,21 +20,13 @@ export default function App() {
         <Hero />
         <TechMarquee />
         <About />
-        <SectionDivider />
         <Skills />
-        <SectionDivider />
         <Projects />
-        <SectionDivider />
         <Experience />
-        <SectionDivider />
         <Hackathons />
-        <SectionDivider />
         <Formations />
-        <SectionDivider />
         <Certifications />
-        <SectionDivider />
         <SoftSkillsLanguages />
-        <SectionDivider />
         <Contact />
       </main>
       <Footer />

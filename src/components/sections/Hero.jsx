@@ -1,24 +1,34 @@
 import { useState, useEffect } from 'react';
 import data from '../../data/portfolio.json';
-import { Avatar, SocialLinks } from '../ui/index.jsx';
+import { MagneticButton, CircleText, LocalTime, SplitText } from '../ui/index.jsx';
 import { Icon } from '../ui/Icons.jsx';
 import { useRevealOnce } from '../../hooks/useReveal.js';
+import { useScrollFrame, clamp } from '../../hooks/useMotion.js';
+import photo from '../../assets/profile.png';
 
-function TypingText({ text }) {
-  const [displayed, setDisplayed] = useState('');
+const ROLES = ['applications web', 'agents IA', 'pipelines data', 'APIs robustes', 'apps mobiles'];
+
+/* Words flip vertically one after another, like a split-flap board */
+function RoleRoller() {
+  const [index, setIndex] = useState(0);
   useEffect(() => {
-    let i = 0;
-    const timer = setInterval(() => {
-      setDisplayed(text.slice(0, i));
-      i++;
-      if (i > text.length) clearInterval(timer);
-    }, 55);
-    return () => clearInterval(timer);
-  }, [text]);
+    const id = setInterval(() => setIndex(i => (i + 1) % ROLES.length), 2400);
+    return () => clearInterval(id);
+  }, []);
+
   return (
-    <span>
-      {displayed}
-      <span className="typing-cursor" aria-hidden="true" />
+    <span className="roller" aria-live="polite">
+      {ROLES.map((role, i) => {
+        const offset = (i - index + ROLES.length) % ROLES.length;
+        const state = offset === 0 ? 'in' : offset === ROLES.length - 1 ? 'out' : 'wait';
+        return (
+          <span key={role} className={`roller__word roller__word--${state}`} aria-hidden={offset !== 0}>
+            {role}
+          </span>
+        );
+      })}
+      {/* Keeps the box as wide as the longest label so the line never jumps */}
+      <span className="roller__sizer" aria-hidden="true">applications web</span>
     </span>
   );
 }
@@ -32,11 +42,11 @@ function CountUp({ value }) {
 
   const ref = useRevealOnce(() => {
     if (Number.isNaN(target) || target <= 0) { setDisplay(value); return; }
-    const duration = 900;
+    const duration = 1400;
     const start = performance.now();
     const step = now => {
       const progress = Math.min((now - start) / duration, 1);
-      const eased = 1 - Math.pow(1 - progress, 3);
+      const eased = 1 - Math.pow(1 - progress, 4);
       setDisplay(String(Math.round(eased * target)));
       if (progress < 1) requestAnimationFrame(step);
     };
@@ -48,189 +58,221 @@ function CountUp({ value }) {
 
 export default function Hero() {
   const { profile, hero } = data;
+  const words = profile.name.split(' ');
+  const surname = words.slice(0, 2).join(' ');
+  const [first, second] = words.slice(2);
 
-  const nameWords = profile.name.split(' ');
-  const mid = Math.ceil(nameWords.length / 2);
-  const nameLine1 = nameWords.slice(0, mid).join(' ');
-  const nameLine2 = nameWords.slice(mid).join(' ');
+  /* Scroll-linked: the two name lines drift apart, the photo grows */
+  const ref = useScrollFrame((el, vh) => {
+    const p = clamp(window.scrollY / vh);
+    el.style.setProperty('--hp', p.toFixed(4));
+  });
 
   return (
-    <section id="hero" className="hero">
-      <div className="topo-bg" aria-hidden="true" />
-      <div className="container">
-        <div className="hero__inner">
+    <section id="hero" className="hero" ref={ref}>
+      <div className="hero__grid-lines" aria-hidden="true">
+        <span /><span /><span /><span />
+      </div>
 
-          {/* ── Left ── */}
-          <div className="hero__content">
-            <div className="hero__eyebrow-row animate-fadeup delay-1">
-              <p className="hero__greeting">{hero.greeting}</p>
-              {profile.available && (
-                <span className="hero__available">
-                  <span className="hero__available-dot" />
-                  Disponible
-                </span>
-              )}
-            </div>
-
-            <h1 className="hero__name animate-fadeup delay-2">
-              <span className="hero__name-line">{nameLine1}</span>
-              <span className="hero__name-line hero__name-accent">{nameLine2}</span>
-            </h1>
-
-            <p className="hero__title animate-fadeup delay-3">
-              <TypingText text={profile.title} />
-            </p>
-
-            <p className="hero__bio animate-fadeup delay-4">{profile.bio}</p>
-
-            {/* Badges */}
-            <div className="hero__badges animate-fadeup delay-4">
-              {profile.seekingRole && (
-                <span className="hero__badge hero__badge--seek">
-                  <Icon name="zap" size={12} color="var(--accent)" />
-                  {profile.seekingRole}
-                </span>
-              )}
-              {profile.mobility && (
-                <span className="hero__badge hero__badge--mobility">
-                  <Icon name="mapPin" size={12} color="var(--text-secondary)" />
-                  {profile.mobility}
-                </span>
-              )}
-            </div>
-
-            <div className="hero__actions animate-fadeup delay-5">
-              <a href="#contact" className="btn btn-primary">
-                Discutons <Icon name="arrowUpRight" size={14} />
-              </a>
-              {profile.cvLink && profile.cvLink !== '#' && (
-                <a href={profile.cvLink} className="btn btn-outline" target="_blank" rel="noopener noreferrer">
-                  <Icon name="download" size={14} /> Télécharger CV
-                </a>
-              )}
-              {profile.website && (
-                <a href={profile.website} className="btn btn-outline" target="_blank" rel="noopener noreferrer">
-                  <Icon name="globe" size={14} /> Site web
-                </a>
-              )}
-            </div>
-
-            <div className="animate-fadeup delay-6">
-              <SocialLinks social={profile.social} />
-            </div>
-          </div>
-
-          {/* ── Right — card ── */}
-          <div className="hero__sidebar animate-fadeup delay-3">
-            <div className="hero-card card">
-              <Avatar src={profile.avatar} name={profile.name} size={76} />
-
-              <div className="hero-card__info">
-                <p className="hero-card__name">{profile.name}</p>
-                <p className="hero-card__email">{profile.email}</p>
-                <p className="hero-card__location">
-                  <Icon name="mapPin" size={11} color="var(--text-muted)" style={{ marginRight: 4 }} />
-                  {profile.location}
-                </p>
-              </div>
-
-              <div className="hero-card__divider" />
-
-              <div className="hero-card__stats">
-                {hero.stats.map(stat => (
-                  <div key={stat.id} className="hero-stat">
-                    <span className="hero-stat__value"><CountUp value={stat.value} /></span>
-                    <span className="hero-stat__label">{stat.label}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
+      <div className="container hero__container">
+        <div className="hero__top">
+          <p className="hero__meta hero-in" style={{ '--d': '0.1s' }}>
+            <span className="hero__status">
+              <span className="hero__status-dot" />
+              {profile.available ? 'Ouvert aux opportunités' : 'En poste'}
+            </span>
+          </p>
+          <p className="hero__meta hero-in" style={{ '--d': '0.2s' }}>
+            {profile.location} — <LocalTime />
+          </p>
         </div>
+
+        <h1 className="hero__name">
+          <span className="hero__surname hero-in" style={{ '--d': '0.15s' }}>{surname}</span>
+          <span className="hero__line hero__line--1">
+            <SplitText text={first} delay={150} />
+          </span>
+          <span className="hero__line hero__line--2">
+            <span className="hero__photo" aria-hidden="true">
+              <img src={photo} alt="" />
+            </span>
+            <SplitText text={`*${second}*`} delay={320} />
+          </span>
+        </h1>
+
+        <div className="hero__bottom">
+          <p className="hero__pitch hero-in" style={{ '--d': '0.7s' }}>
+            {profile.title.split(' ')[0]} <strong>{profile.title.split(' ').slice(1).join(' ')}</strong>,
+            je conçois et je livre des <RoleRoller />
+          </p>
+
+          <div className="hero__actions hero-in" style={{ '--d': '0.85s' }}>
+            <MagneticButton href="#projects">Voir mes projets</MagneticButton>
+            <MagneticButton href="#contact" variant="outline">Discutons</MagneticButton>
+          </div>
+
+          <a href="#about" className="hero__scroll hero-in" style={{ '--d': '1s' }} aria-label="Défiler vers la suite">
+            <CircleText text="Fullstack · IA · Data · Scroll · " size={112}>
+              <span className="hero__scroll-arrow">
+                <Icon name="chevronDown" size={20} strokeWidth={2} />
+              </span>
+            </CircleText>
+          </a>
+        </div>
+
+        <ul className="hero__stats">
+          {hero.stats.map((stat, i) => (
+            <li key={stat.id} className="hero-stat hero-in" style={{ '--d': `${1 + i * 0.1}s` }}>
+              <span className="hero-stat__value"><CountUp value={stat.value} /></span>
+              <span className="hero-stat__label">{stat.label}</span>
+            </li>
+          ))}
+        </ul>
       </div>
 
       <style>{`
         .hero {
-          min-height: 100vh; display: flex; align-items: center;
-          padding-top: var(--nav-height); overflow: hidden;
+          --hp: 0;
+          min-height: 100svh;
+          padding: calc(var(--nav-height) + 24px) 0 48px;
+          overflow: hidden;
+          display: flex; align-items: stretch;
         }
-        .hero__inner {
-          display: grid; grid-template-columns: 1.1fr 0.9fr;
-          gap: 80px; align-items: center; padding: 60px 0;
+        .hero__container { width: 100%; display: flex; flex-direction: column; }
+
+        .hero__grid-lines {
+          position: absolute; inset: 0;
+          display: grid; grid-template-columns: repeat(4, 1fr);
+          max-width: var(--container-max); margin: 0 auto;
+          padding: 0 var(--container-pad);
+          pointer-events: none;
         }
-        .hero__eyebrow-row {
-          display: flex; align-items: center; gap: 14px;
-          margin-bottom: 18px;
+        .hero__grid-lines span {
+          border-left: 1px solid var(--bg-raised);
+          transform-origin: top; animation: growLine 1.6s var(--ease-out) both;
         }
-        .hero__greeting {
-          font-family: var(--font-mono); font-size: 12px;
-          letter-spacing: 0.15em; text-transform: uppercase;
-          color: var(--accent);
+        .hero__grid-lines span:last-child { border-right: 1px solid var(--bg-raised); }
+        .hero__grid-lines span:nth-child(2) { animation-delay: 0.1s; }
+        .hero__grid-lines span:nth-child(3) { animation-delay: 0.2s; }
+        .hero__grid-lines span:nth-child(4) { animation-delay: 0.3s; }
+        @keyframes growLine { from { transform: scaleY(0); } }
+
+        .hero-in { animation: rise 1s var(--ease-out) both; animation-delay: var(--d, 0s); }
+
+        .hero__top {
+          position: relative;
+          display: flex; justify-content: space-between; align-items: center; gap: 16px;
+          flex-wrap: wrap;
         }
-        .hero__available {
-          display: inline-flex; align-items: center; gap: 6px;
-          font-family: var(--font-mono); font-size: 10px;
-          color: var(--accent-dim); background: var(--accent-bg);
-          border: 1px solid var(--border); padding: 4px 10px; border-radius: 20px;
+        .hero__meta { font-family: var(--font-mono); font-size: 12px; color: var(--text-secondary); }
+        .hero__status {
+          display: inline-flex; align-items: center; gap: 10px;
+          padding: 8px 14px; border-radius: 999px;
+          background: var(--accent-bg); color: var(--accent-dim);
         }
-        .hero__available-dot {
-          width: 6px; height: 6px; border-radius: 50%; background: var(--accent);
+        .hero__status-dot {
+          width: 8px; height: 8px; border-radius: 50%; background: var(--accent);
           animation: pulse-ring 2s ease-out infinite;
         }
+
         .hero__name {
+          position: relative;
+          margin: auto 0; padding: 48px 0 32px;
           font-family: var(--font-display);
-          font-size: clamp(24px, 2.9vw, 38px);
-          font-weight: 800; line-height: 1.16;
-          letter-spacing: -0.015em; margin-bottom: 18px;
+          font-weight: 700; letter-spacing: -0.035em; line-height: 0.86;
+          font-size: clamp(64px, 15.5vw, 212px);
         }
-        .hero__name-line { display: block; }
-        .hero__name-accent { color: var(--accent); }
-        .hero__title {
-          font-family: var(--font-mono);
-          font-size: clamp(13px, 1.4vw, 17px);
-          color: var(--text-secondary); margin-bottom: 20px; min-height: 26px;
+        .hero__surname {
+          display: block; margin-bottom: 18px;
+          font-family: var(--font-mono); font-weight: 400;
+          font-size: clamp(12px, 1.1vw, 15px); letter-spacing: 0.02em; line-height: 1;
+          color: var(--text-secondary);
         }
-        .typing-cursor {
-          display: inline-block; width: 2px; height: 1em;
-          background: var(--accent); vertical-align: text-bottom;
-          margin-left: 2px; animation: blink 1s step-end infinite;
+        .hero__surname::before { content: '— '; color: var(--accent); }
+        .hero__line { display: flex; align-items: center; white-space: nowrap; will-change: transform; }
+        .hero__line--1 { transform: translateX(calc(var(--hp) * -12%)); }
+        .hero__line--2 {
+          justify-content: flex-end; gap: 0.12em;
+          transform: translateX(calc(var(--hp) * 10%));
         }
-        .hero__bio {
-          font-size: 14px; color: var(--text-secondary);
-          line-height: 1.8; margin-bottom: 20px; max-width: 500px;
-        }
-        .hero__badges { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 28px; }
-        .hero__badge {
-          display: inline-flex; align-items: center; gap: 6px;
-          font-family: var(--font-mono); font-size: 11px;
-          padding: 5px 12px; border-radius: 20px; border: 1px solid var(--border);
-        }
-        .hero__badge--seek { color: var(--accent-dim); background: var(--accent-bg); border-color: var(--border-hover); }
-        .hero__badge--mobility { color: var(--text-secondary); background: var(--bg-raised); }
-        .hero__actions { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 28px; }
+        .hero__line--2 em { padding-right: 0.06em; }
 
-        /* Card */
-        .hero-card { padding: 30px 22px 26px; display: flex; flex-direction: column; align-items: center; text-align: center; }
-        .hero-card__info { margin-top: 16px; }
-        .hero-card__name { font-family: var(--font-display); font-size: 15px; font-weight: 700; line-height: 1.3; }
-        .hero-card__email { font-family: var(--font-mono); font-size: 10px; color: var(--text-secondary); margin-top: 4px; }
-        .hero-card__location {
-          font-family: var(--font-mono); font-size: 10px; color: var(--text-muted);
-          margin-top: 4px; display: flex; align-items: center; justify-content: center;
+        .hero__photo {
+          display: inline-block; flex-shrink: 0;
+          width: 1.9em; height: 0.78em; border-radius: 999px;
+          overflow: hidden; background: var(--bg-raised);
+          animation: photoIn 1.4s var(--ease-io) 0.4s both;
         }
-        .hero-card__divider { width: 100%; height: 1px; background: var(--border); margin: 18px 0; }
-        .hero-card__stats { width: 100%; display: flex; flex-direction: column; gap: 8px; }
+        .hero__photo img {
+          width: 100%; height: 100%; object-fit: cover; object-position: 50% 22%;
+          transform: scale(calc(1.25 - var(--hp) * 0.2));
+        }
+        @keyframes photoIn { from { width: 0; } }
+
+        .hero__bottom {
+          position: relative;
+          display: grid; grid-template-columns: 1.2fr 1fr auto;
+          align-items: center; gap: 32px;
+          padding-top: 32px; border-top: 1px solid var(--border);
+        }
+        .hero__pitch { font-size: clamp(18px, 1.7vw, 23px); line-height: 1.45; letter-spacing: -0.015em; max-width: 520px; }
+        .hero__pitch strong { font-weight: 600; }
+
+        .roller { position: relative; display: inline-grid; vertical-align: bottom; overflow: hidden; }
+        .roller__word, .roller__sizer {
+          grid-area: 1 / 1;
+          font-family: var(--font-serif); font-style: italic; color: var(--accent);
+          font-size: 1.2em; line-height: 1.2; white-space: nowrap;
+        }
+        .roller__sizer { visibility: hidden; }
+        .roller__word { transition: transform 0.8s var(--ease-out), opacity 0.8s var(--ease-out); }
+        .roller__word--in   { transform: none; opacity: 1; }
+        .roller__word--out  { transform: translateY(-100%); opacity: 0; }
+        .roller__word--wait { transform: translateY(100%); opacity: 0; transition: none; }
+
+        .hero__actions { display: flex; gap: 12px; flex-wrap: wrap; justify-content: flex-end; }
+
+        .hero__scroll { color: var(--text-primary); display: block; }
+        .hero__scroll-arrow {
+          width: 44px; height: 44px; border-radius: 50%;
+          display: grid; place-items: center;
+          background: var(--accent); color: #fff;
+          transition: transform 0.5s var(--ease-out);
+        }
+        .hero__scroll:hover .hero__scroll-arrow { transform: translateY(6px); }
+
+        .hero__stats {
+          position: relative;
+          display: grid; grid-template-columns: repeat(3, 1fr);
+          margin-top: 40px;
+        }
         .hero-stat {
-          display: flex; align-items: center; justify-content: space-between;
-          padding: 10px 14px; background: var(--bg-raised);
-          border-radius: var(--radius-md); border: 1px solid var(--border);
+          display: flex; align-items: baseline; gap: 14px;
+          padding: 4px 24px 0 0;
         }
-        .hero-stat__value { font-family: var(--font-display); font-size: 22px; font-weight: 800; color: var(--accent); }
-        .hero-stat__label { font-size: 12px; color: var(--text-secondary); }
+        .hero-stat + .hero-stat { padding-left: 24px; border-left: 1px solid var(--border); }
+        .hero-stat__value {
+          font-size: clamp(38px, 4.6vw, 64px); font-weight: 700;
+          letter-spacing: -0.05em; line-height: 1; color: var(--accent);
+          font-variant-numeric: tabular-nums;
+        }
+        .hero-stat__label { font-size: 14px; line-height: 1.3; color: var(--text-secondary); max-width: 130px; }
 
-        @media (max-width: 900px) {
-          .hero__inner { grid-template-columns: 1fr; gap: 48px; padding: 40px 0; }
-          .hero__sidebar { max-width: 380px; }
+        @media (max-width: 1000px) {
+          .hero__bottom { grid-template-columns: 1fr auto; }
+          .hero__actions { grid-column: 1 / -1; grid-row: 2; justify-content: flex-start; }
+        }
+        @media (max-width: 640px) {
+          .hero__grid-lines { grid-template-columns: repeat(2, 1fr); }
+          .hero__grid-lines span:nth-child(n+3) { display: none; }
+          .hero__grid-lines span:nth-child(2) { border-right: 1px solid var(--bg-raised); }
+          .hero__name { font-size: clamp(56px, 19vw, 110px); padding: 32px 0 24px; }
+          .hero__line--2 { justify-content: flex-start; }
+          .hero__bottom { grid-template-columns: 1fr; }
+          .hero__scroll { display: none; }
+          .hero__stats { grid-template-columns: 1fr; gap: 14px; margin-top: 32px; }
+          .hero-stat, .hero-stat + .hero-stat { padding: 0; border: none; }
+          .hero-stat__label { max-width: none; }
         }
       `}</style>
     </section>

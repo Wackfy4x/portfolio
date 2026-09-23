@@ -1,205 +1,170 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import data from '../../data/portfolio.json';
-import { SectionHeader, TagList } from '../ui/index.jsx';
+import { SectionHeader } from '../ui/index.jsx';
 import { Icon } from '../ui/Icons.jsx';
 import { useReveal } from '../../hooks/useReveal.js';
+import { hasFinePointer, prefersReducedMotion } from '../../hooks/useMotion.js';
 import ProjectModal from './ProjectModal.jsx';
+import ProjectCover from './ProjectCover.jsx';
 
-/* Détecte si un lien est GitLab */
-const isGitlab = url => url && url.includes('gitlab.com');
-const isGithub = url => url && url.includes('github.com');
+/**
+ * Floating preview that trails the pointer over the list. All covers are
+ * stacked in one column and the column slides to the hovered project, so
+ * moving between rows scrolls the preview rather than swapping it.
+ */
+function HoverPreview({ projects, active, listRef }) {
+  const boxRef = useRef(null);
 
-function ProjectCard({ project, onOpen, index, large }) {
-  /* Lien repo unique (github ou gitlab) */
-  const repoUrl  = project.links?.github || '';
-  const repoIcon = isGitlab(repoUrl) ? 'gitlab' : 'github';
-  const repoLabel = isGitlab(repoUrl) ? 'GitLab' : 'GitHub';
+  useEffect(() => {
+    const list = listRef.current;
+    const box = boxRef.current;
+    if (!list || !box || !hasFinePointer()) return;
+
+    const reduced = prefersReducedMotion();
+    let x = 0, y = 0, tx = 0, ty = 0, raf = 0;
+
+    const loop = () => {
+      x += (tx - x) * (reduced ? 1 : 0.14);
+      y += (ty - y) * (reduced ? 1 : 0.14);
+      const tilt = reduced ? 0 : Math.max(-8, Math.min(8, (tx - x) * 0.05));
+      box.style.transform = `translate3d(${x}px, ${y}px, 0) rotate(${tilt}deg)`;
+      raf = requestAnimationFrame(loop);
+    };
+    const move = e => { tx = e.clientX + 32; ty = e.clientY - 120; };
+    const enter = e => {
+      move(e);
+      x = tx; y = ty;
+      cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(loop);
+    };
+    const leave = () => cancelAnimationFrame(raf);
+
+    list.addEventListener('pointermove', move);
+    list.addEventListener('pointerenter', enter);
+    list.addEventListener('pointerleave', leave);
+    return () => {
+      cancelAnimationFrame(raf);
+      list.removeEventListener('pointermove', move);
+      list.removeEventListener('pointerenter', enter);
+      list.removeEventListener('pointerleave', leave);
+    };
+  }, [listRef]);
 
   return (
-    <article
-      className={`project-card card${project.featured ? ' project-card--featured' : ''}${large ? ' project-card--large' : ''}`}
-      onClick={() => onOpen(project)}
-      style={{ cursor: 'pointer', '--i': index }}
-    >
-      {/* Thumbnail */}
-      <div className="project-card__thumb">
-        <div className="project-card__emoji-wrap">
-          <span className="project-card__emoji-char">{project.emoji}</span>
-        </div>
-        {project.featured && (
-          <span className="project-card__featured-badge">
-            <Icon name="star" size={9} strokeWidth={2.5} /> Featured
-          </span>
-        )}
-        <div className="project-card__overlay">
-          <Icon name="maximize2" size={22} color="var(--accent)" />
-          <span>Voir le projet</span>
+    <div ref={boxRef} className={`pv${active >= 0 ? ' pv--on' : ''}`} aria-hidden="true">
+      <div className="pv__inner">
+        <div className="pv__track" style={{ transform: `translateY(${-Math.max(active, 0) * 100}%)` }}>
+          {projects.map((p, i) => (
+            <div key={p.id} className="pv__slide"><ProjectCover project={p} index={i} /></div>
+          ))}
         </div>
       </div>
-
-      {/* Body */}
-      <div className="project-card__body">
-        <TagList tags={project.tags} style={{ marginBottom: 10 }} />
-        <h3 className="project-card__title">{project.title}</h3>
-        <p className="project-card__desc">{project.description}</p>
-
-        <div className="project-card__links" onClick={e => e.stopPropagation()}>
-          {project.links?.demo && (
-            <a href={project.links.demo} className="project-link" target="_blank" rel="noopener noreferrer">
-              <Icon name="externalLink" size={12} /> Demo
-            </a>
-          )}
-          {repoUrl && (
-            <a href={repoUrl} className="project-link" target="_blank" rel="noopener noreferrer">
-              <Icon name={repoIcon} size={12} /> {repoLabel}
-            </a>
-          )}
-          <button className="project-link project-link--details" onClick={() => onOpen(project)}>
-            <Icon name="layers" size={12} /> Détails
-          </button>
-        </div>
-      </div>
-    </article>
+    </div>
   );
 }
 
 export default function Projects() {
   const { projects } = data;
-  const [showAll, setShowAll] = useState(false);
-  const [activeProject, setActiveProject] = useState(null);
-  const gridRef = useReveal();
+  const [active, setActive] = useState(-1);
+  const [open, setOpen] = useState(null);
+  const listRef = useRef(null);
+  const revealRef = useReveal();
 
-  const visible = showAll ? projects : projects.slice(0, 3);
+  const setRefs = el => { listRef.current = el; revealRef.current = el; };
 
   return (
-    <section id="projects">
+    <section id="projects" className="projects">
       <div className="container">
         <SectionHeader
-          eyebrow="Works"
-          title="Projets"
-          subtitle="Une sélection de projets sur lesquels j'ai travaillé. Cliquez pour en savoir plus."
+          index="03"
+          label="Projets"
+          title="Ce que j'ai *construit.*"
+          subtitle="Hackathons, projets d'équipe et missions en entreprise. Cliquez sur un projet pour le détail."
         />
 
-        <div ref={gridRef} className="projects__grid reveal-stagger">
-          {visible.map((project, i) => (
-            <ProjectCard key={project.id} project={project} onOpen={setActiveProject} index={i} large={i === 0} />
+        <ol ref={setRefs} className="plist reveal-stagger" onPointerLeave={() => setActive(-1)}>
+          {projects.map((p, i) => (
+            <li key={p.id} style={{ '--i': i }}>
+              <button
+                className="prow"
+                onClick={() => setOpen({ project: p, index: i })}
+                onPointerEnter={e => e.pointerType === 'mouse' && setActive(i)}
+              >
+                <span className="prow__num">{String(i + 1).padStart(2, '0')}</span>
+                <span className="prow__title">{p.title}</span>
+                <span className="prow__tags">{p.tags.slice(0, 3).join(' · ')}</span>
+                <span className="prow__arrow"><Icon name="arrowUpRight" size={22} /></span>
+              </button>
+            </li>
           ))}
-        </div>
-
-        {projects.length > 3 && (
-          <div className="projects__more">
-            <button className="btn btn-outline" onClick={() => setShowAll(o => !o)}>
-              {showAll
-                ? <><Icon name="chevronLeft" size={14} style={{ transform: 'rotate(90deg)' }} /> Voir moins</>
-                : <><Icon name="images" size={14} /> Voir tous ({projects.length})</>
-              }
-            </button>
-          </div>
-        )}
+        </ol>
       </div>
 
-      {activeProject && (
-        <ProjectModal project={activeProject} onClose={() => setActiveProject(null)} />
+      <HoverPreview projects={projects} active={active} listRef={listRef} />
+
+      {open && (
+        <ProjectModal project={open.project} index={open.index} onClose={() => setOpen(null)} />
       )}
 
       <style>{`
-        .projects__grid {
-          display: grid;
-          grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-          gap: 22px;
-          align-items: start;
+        .plist { border-top: 1px solid var(--text-primary); }
+        .prow {
+          position: relative; isolation: isolate;
+          width: 100%; text-align: left;
+          display: grid; grid-template-columns: 70px 1fr 280px 48px;
+          align-items: center; gap: 24px;
+          padding: 30px 12px; border-bottom: 1px solid var(--border-hover);
+          transition: color 0.4s var(--ease-out);
         }
-        .project-card { display: flex; flex-direction: column; overflow: hidden; }
-        .project-card--featured { border-color: var(--border-hover); }
-        .project-card--large { grid-column: span 2; }
-        .project-card--large .project-card__thumb { height: 220px; }
-        .project-card--large .project-card__emoji-wrap { width: 104px; height: 104px; }
-        .project-card--large .project-card__emoji-char { font-size: 48px; }
-        @media (max-width: 780px) { .project-card--large { grid-column: span 1; } }
+        .prow::before {
+          content: ''; position: absolute; inset: 0; z-index: -1;
+          background: var(--accent);
+          transform: scaleY(0); transform-origin: bottom;
+          transition: transform 0.5s var(--ease-out);
+        }
+        .prow:hover, .prow:focus-visible { color: #fff; outline: none; }
+        .prow:hover::before, .prow:focus-visible::before { transform: scaleY(1); transform-origin: top; }
 
-        .project-card__thumb {
-          position: relative;
-          height: 160px;
-          background: var(--bg-raised);
-          overflow: hidden;
-          border-bottom: 1px solid var(--border);
-          display: flex;
-          align-items: center;
-          justify-content: center;
+        .prow__num { font-family: var(--font-mono); font-size: 13px; color: var(--accent); transition: color 0.4s; }
+        .prow:hover .prow__num, .prow:focus-visible .prow__num { color: #fff; }
+        .prow__title {
+          font-size: clamp(22px, 3vw, 40px); font-weight: 600;
+          letter-spacing: -0.04em; line-height: 1.05;
+          transition: transform 0.6s var(--ease-out);
         }
-        .project-card__emoji-wrap {
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          width: 80px;
-          height: 80px;
-          border-radius: 20px;
-          background: var(--bg-overlay);
-          border: 1px solid var(--border);
-          transition: transform var(--dur-fast) var(--ease-out), border-color var(--transition);
+        .prow:hover .prow__title { transform: translateX(16px); }
+        .prow__tags { font-family: var(--font-mono); font-size: 12px; opacity: 0.75; }
+        .prow__arrow {
+          width: 48px; height: 48px; border-radius: 50%;
+          display: grid; place-items: center;
+          border: 1px solid currentColor;
+          transition: transform 0.6s var(--ease-out), background 0.3s, color 0.3s;
         }
-        .project-card:hover .project-card__emoji-wrap {
-          transform: scale(1.1);
-          border-color: var(--border-hover);
-        }
-        .project-card__emoji-char {
-          font-size: 38px;
-          line-height: 1;
-          display: block;
-        }
+        .prow:hover .prow__arrow { transform: rotate(45deg); background: #fff; color: var(--accent); }
 
-        .project-card__overlay {
-          position: absolute; inset: 0;
-          background: var(--scrim);
-          backdrop-filter: blur(4px);
-          display: flex; flex-direction: column;
-          align-items: center; justify-content: center;
-          gap: 8px; opacity: 0;
-          transition: opacity 0.25s ease;
+        .pv {
+          position: fixed; left: 0; top: 0; z-index: 50;
+          width: 340px; height: 240px;
+          pointer-events: none;
         }
-        .project-card:hover .project-card__overlay { opacity: 1; }
-        .project-card__overlay span {
-          font-family: var(--font-mono); font-size: 11px;
-          color: var(--accent); letter-spacing: 0.08em;
+        .pv__inner {
+          width: 100%; height: 100%; overflow: hidden;
+          border-radius: var(--radius-lg);
+          box-shadow: 0 0 0 6px #fff, 0 30px 60px -20px rgba(15, 23, 42, 0.45);
+          transform: scale(0); opacity: 0;
+          transition: transform 0.5s var(--ease-out), opacity 0.3s;
         }
+        .pv--on .pv__inner { transform: scale(1); opacity: 1; }
+        .pv__track { height: 100%; transition: transform 0.7s var(--ease-io); }
+        .pv__slide { height: 100%; }
+        @media (hover: none), (pointer: coarse) { .pv { display: none; } }
 
-        .project-card__featured-badge {
-          position: absolute; top: 12px; right: 12px;
-          display: inline-flex; align-items: center; gap: 4px;
-          font-family: var(--font-mono); font-size: 9px;
-          padding: 3px 9px; background: var(--accent);
-          color: var(--bg-base); border-radius: 10px;
-          font-weight: 700; letter-spacing: 0.05em; z-index: 1;
+        @media (max-width: 900px) {
+          .prow { grid-template-columns: 44px 1fr 44px; gap: 14px; padding: 24px 4px; }
+          .prow__tags { grid-column: 2; grid-row: 2; }
+          .prow__arrow { grid-column: 3; grid-row: 1 / span 2; width: 40px; height: 40px; }
+          .prow:hover .prow__title { transform: none; }
         }
-
-        .project-card__body { padding: 20px; flex: 1; display: flex; flex-direction: column; }
-        .project-card__title {
-          font-family: var(--font-display); font-size: 17px;
-          font-weight: 700; color: var(--text-primary); margin-bottom: 7px;
-        }
-        .project-card__desc {
-          font-size: 13px; color: var(--text-secondary); line-height: 1.65;
-          flex: 1; margin-bottom: 14px;
-          display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;
-        }
-
-        .project-card__links { display: flex; gap: 14px; flex-wrap: wrap; align-items: center; }
-        .project-link {
-          display: inline-flex; align-items: center; gap: 5px;
-          font-family: var(--font-mono); font-size: 11px;
-          color: var(--accent); transition: opacity var(--transition);
-          background: none; border: none; cursor: pointer; padding: 0;
-        }
-        .project-link:hover { opacity: 0.7; }
-        .project-link--details {
-          margin-left: auto; color: var(--text-secondary);
-          border: 1px solid var(--border); padding: 4px 10px;
-          border-radius: 6px; transition: all var(--transition);
-        }
-        .project-link--details:hover {
-          border-color: var(--accent); color: var(--accent); opacity: 1;
-        }
-        .projects__more { display: flex; justify-content: center; margin-top: 40px; }
       `}</style>
     </section>
   );

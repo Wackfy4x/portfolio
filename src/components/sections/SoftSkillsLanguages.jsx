@@ -1,132 +1,116 @@
+import { useState } from 'react';
 import data from '../../data/portfolio.json';
 import { SectionHeader } from '../ui/index.jsx';
-import { Icon } from '../ui/Icons.jsx';
-import { useReveal } from '../../hooks/useReveal.js';
+import { useReveal, useRevealOnce } from '../../hooks/useReveal.js';
 
-/* Icône par soft skill */
-const SOFT_ICONS = {
-  'autonomie':      'zap',
-  'rigueur':        'checkCircle',
-  'esprit critique':'layers',
-};
+const R = 52;
+const CIRC = 2 * Math.PI * R;
 
-function LangBar({ percent }) {
-  const ref = useReveal();
+/* Ring fills to the language level once, when it scrolls into view */
+function LangRing({ lang, index }) {
+  const [shown, setShown] = useState(false);
+  const ref = useRevealOnce(() => setShown(true));
+  const offset = shown ? CIRC * (1 - lang.percent / 100) : CIRC;
+
   return (
-    <div ref={ref} className="ssl__lang-bar reveal">
-      <div className="ssl__lang-fill" style={{ '--pct': `${percent}%` }} />
+    <div ref={ref} className="lang" style={{ '--i': index }}>
+      <div className="lang__ring">
+        <svg viewBox="0 0 120 120" aria-hidden="true">
+          <circle cx="60" cy="60" r={R} className="lang__track" />
+          <circle cx="60" cy="60" r={R} className="lang__fill"
+            strokeDasharray={CIRC} strokeDashoffset={offset} />
+        </svg>
+        <span className="lang__pct">{lang.percent}<small>%</small></span>
+      </div>
+      <div>
+        <p className="lang__name">{lang.name}</p>
+        <p className="lang__level">{lang.level}</p>
+      </div>
     </div>
   );
 }
 
 export default function SoftSkillsLanguages() {
   const { softSkills, languages } = data;
-  const softRef = useReveal();
-  const langRef = useReveal();
+  const wordsRef = useReveal();
   if (!softSkills?.length && !languages?.length) return null;
 
   return (
-    <section id="soft-skills">
+    <section id="soft-skills" className="ssl">
       <div className="container">
-        <SectionHeader eyebrow="Human skills" title="Soft Skills & Langues" />
+        <SectionHeader index="08" label="Savoir-être & langues" title="Au-delà du *code.*" />
+
         <div className="ssl__grid">
-
-          {/* Soft Skills */}
           {softSkills?.length > 0 && (
-            <div ref={softRef} className="ssl__block reveal">
-              <h3 className="ssl__block-title">Soft Skills</h3>
-              <div className="ssl__soft-list">
-                {softSkills.map(s => {
-                  const iconName = SOFT_ICONS[s.label.toLowerCase()] || 'star';
-                  return (
-                    <div key={s.id} className="ssl__soft-item">
-                      <div className="ssl__soft-icon-wrap">
-                        <Icon name={iconName} size={18} color="var(--accent)" strokeWidth={1.75} />
-                      </div>
-                      <span className="ssl__soft-label">{s.label}</span>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
+            <ul ref={wordsRef} className="ssl__words reveal-stagger" aria-label="Soft skills">
+              {softSkills.map((s, i) => (
+                <li key={s.id} className="ssl__word" style={{ '--i': i }}>
+                  <span className="ssl__word-num">0{i + 1}</span>
+                  <span className="ssl__word-text">{s.label}</span>
+                </li>
+              ))}
+            </ul>
           )}
 
-          {/* Langues */}
           {languages?.length > 0 && (
-            <div ref={langRef} className="ssl__block reveal">
-              <h3 className="ssl__block-title">Langues</h3>
-              <div className="ssl__lang-list">
-                {languages.map(lang => (
-                  <div key={lang.id} className="ssl__lang-item">
-                    <div className="ssl__lang-header">
-                      <span className="ssl__lang-name">
-                        <Icon name="globe" size={14} color="var(--accent)" style={{ marginRight: 8, verticalAlign: 'middle' }} />
-                        {lang.name}
-                      </span>
-                      <span className="ssl__lang-level">{lang.level}</span>
-                    </div>
-                    <LangBar percent={lang.percent} />
-                  </div>
-                ))}
-              </div>
+            <div className="ssl__langs">
+              {languages.map((lang, i) => <LangRing key={lang.id} lang={lang} index={i} />)}
             </div>
           )}
-
         </div>
       </div>
 
       <style>{`
-        .ssl__grid { display: grid; grid-template-columns: 1fr 1.4fr; gap: 40px; }
-        .ssl__block {
-          background: var(--bg-surface); border: 1px solid var(--border);
-          border-radius: var(--radius-lg); padding: 28px;
+        .ssl { background: var(--bg-surface); }
+        .ssl__grid { display: grid; grid-template-columns: 1.3fr 1fr; gap: 64px; align-items: center; }
+
+        .ssl__word {
+          display: flex; align-items: baseline; gap: 18px;
+          padding: 10px 0; border-bottom: 1px solid var(--border-hover);
+          cursor: default;
         }
-        .ssl__block-title {
-          font-family: var(--font-mono); font-size: 11px;
-          letter-spacing: .12em; text-transform: uppercase;
-          color: var(--accent); margin-bottom: 20px;
+        .ssl__word-num { font-family: var(--font-mono); font-size: 12px; color: var(--accent); }
+        .ssl__word-text {
+          font-size: clamp(40px, 6vw, 84px); font-weight: 700;
+          letter-spacing: -0.045em; line-height: 1;
+          transition: transform 0.6s var(--ease-out), color 0.3s;
         }
-        .ssl__soft-list { display: flex; flex-direction: column; gap: 12px; }
-        .ssl__soft-item {
-          display: flex; align-items: center; gap: 14px;
-          padding: 12px 16px; background: var(--bg-raised);
-          border: 1px solid var(--border); border-radius: var(--radius-md);
-          transition: border-color var(--transition), transform var(--transition);
+        .ssl__word:nth-child(even) .ssl__word-text {
+          font-family: var(--font-serif); font-style: italic; font-weight: 400; letter-spacing: -0.02em;
         }
-        .ssl__soft-item:hover { border-color: var(--border-hover); transform: translateX(4px); }
-        .ssl__soft-icon-wrap {
-          width: 36px; height: 36px; border-radius: 8px;
-          background: var(--accent-bg); border: 1px solid var(--border);
-          display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+        .ssl__word:hover .ssl__word-text { transform: translateX(20px) skewX(-6deg); color: var(--accent); }
+
+        .ssl__langs { display: flex; flex-direction: column; gap: 28px; }
+        .lang {
+          display: flex; align-items: center; gap: 24px;
+          padding: 24px; border-radius: var(--radius-xl);
+          background: var(--bg-base); border: 1px solid var(--border);
         }
-        .ssl__soft-label {
-          font-family: var(--font-display); font-size: 15px;
-          font-weight: 700; color: var(--text-primary);
+        .lang__ring { position: relative; width: 112px; height: 112px; flex-shrink: 0; }
+        .lang__ring svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+        .lang__track { fill: none; stroke: var(--bg-raised); stroke-width: 8; }
+        .lang__fill {
+          fill: none; stroke: var(--accent); stroke-width: 8; stroke-linecap: round;
+          transition: stroke-dashoffset 1.6s var(--ease-out);
+          transition-delay: calc(var(--i) * 0.2s);
         }
-        .ssl__lang-list { display: flex; flex-direction: column; gap: 20px; }
-        .ssl__lang-header {
-          display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;
+        .lang__pct {
+          position: absolute; inset: 0;
+          display: flex; align-items: center; justify-content: center;
+          font-size: 28px; font-weight: 700; letter-spacing: -0.04em;
         }
-        .ssl__lang-name {
-          font-family: var(--font-display); font-size: 16px;
-          font-weight: 700; color: var(--text-primary);
-          display: flex; align-items: center;
+        .lang__pct small { font-size: 14px; font-weight: 500; }
+        .lang__name { font-size: 28px; font-weight: 700; letter-spacing: -0.04em; line-height: 1.1; }
+        .lang__level { font-family: var(--font-mono); font-size: 12px; color: var(--text-secondary); margin-top: 6px; }
+
+        @media (max-width: 900px) {
+          .ssl__grid { grid-template-columns: 1fr; gap: 48px; }
         }
-        .ssl__lang-level {
-          font-family: var(--font-mono); font-size: 10px;
-          color: var(--text-muted); letter-spacing: .06em;
+        @media (max-width: 480px) {
+          .lang { padding: 18px; gap: 18px; }
+          .lang__ring { width: 88px; height: 88px; }
+          .lang__pct { font-size: 22px; }
         }
-        .ssl__lang-bar {
-          height: 5px; background: var(--bg-raised); border-radius: 3px;
-          overflow: hidden; border: 1px solid var(--border);
-        }
-        .ssl__lang-fill {
-          height: 100%; width: var(--pct); background: var(--accent);
-          border-radius: 3px; transform: scaleX(0); transform-origin: left;
-          transition: transform 1s var(--ease-out);
-        }
-        .ssl__lang-bar.is-visible .ssl__lang-fill { transform: scaleX(1); }
-        @media (max-width: 640px) { .ssl__grid { grid-template-columns: 1fr; } }
       `}</style>
     </section>
   );
